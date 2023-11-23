@@ -1,0 +1,53 @@
+services:
+  symfony:
+    container_name: dwcs-php
+    build:
+      context: .
+      dockerfile: ./docker/php/Dockerfile
+      args:
+        USER_ID: ${USER_ID:-0}
+        GROUP_ID: ${GROUP_ID:-0}
+    volumes:
+      - .:/var/www/html
+    depends_on:
+      - db
+    security_opt:
+      - seccomp:unconfined
+      # https://docs.docker.com/engine/security/seccomp/
+    networks:
+      - dwcs
+
+  db:
+    image: mariadb
+    container_name: dwcs-db
+    ports:
+      - "9978:3306"
+    healthcheck:
+      test: "/usr/bin/mysql --user=dwcs --password=dwcs --execute \"SHOW DATABASES;\""
+      interval: 1s
+      timeout: 5s
+      retries: 5
+    environment:
+      MYSQL_DATABASE: dwcs
+      MYSQL_USER: dwcs
+      MYSQL_PASSWORD: dwcs
+      MYSQL_ROOT_PASSWORD: dwcs
+    networks:
+      - dwcs
+
+  nginx:
+    container_name: dwcs-web
+    image: cirdan/sae2022-nginx:latest
+    volumes:
+      - .:/var/www/html
+      - ./docker/nginx/nginx.default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - symfony
+    ports:
+      - 9979:80
+    networks:
+      - dwcs
+
+networks:
+  dwcs:
+    driver: bridge

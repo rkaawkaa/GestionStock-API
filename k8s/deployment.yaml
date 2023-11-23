@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kiosquiut-api-groupe-3-pod
+  namespace: $K8S_NAMESPACE
+  labels:
+    app: kiosquiut-api-groupe-3
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kiosquiut-api-groupe-3
+
+  template:
+    metadata:
+      labels:
+        app: kiosquiut-api-groupe-3
+    spec:
+      containers:
+        - image: $BUILD_IMAGE_PHP_DEPLOY
+          name: php-back-kiosquiut
+          lifecycle:
+            postStart:
+              exec:
+                command: ["/bin/sh", "-c", "chmod -R 777 /var/www/html/var  && php bin/console doctrine:migrations:migrate --no-interaction"]
+          env:
+            - name: DATABASE_URL
+              value: "mysql://$MYSQL_USER:$MYSQL_PASSWORD@$MYSQL_HOST/$MYSQL_DATABASE?serverVersion=8&charset=utf8mb4"  
+        - image: $BUILD_IMAGE_NGINX_DEPLOY
+          name: nginx-back-kiosquiut
+      imagePullSecrets:
+        - name: gitlab-auth
