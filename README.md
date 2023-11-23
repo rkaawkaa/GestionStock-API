@@ -4,7 +4,7 @@
 
 Ce projet est une application web avec un back-end en Symfony/API Platform de gestion de stock de matériel informatique développé dans le cadre de la Licence professionnelle Développement Mobile parcours Full Stack de l'IUT de La Rochelle. Il a été réalisé par KAWKA Robin, HURDEBOURCQ Romain, HELIAS Arthur et PIHAN Alexis.
 
-
+**Cliquez ici pour aller sur le wiki :** https://github.com/rkaawkaa/GestionStock-API/wiki
 ## Dépots
 L'application est composée de deux dépots :
 
